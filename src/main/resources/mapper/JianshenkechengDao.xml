@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.JianshenkechengDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.jiaolian_id as jiaolianId
+        ,a.jianshenkecheng_name as jianshenkechengName
+        ,a.jianshenkecheng_photo as jianshenkechengPhoto
+        ,a.zan_number as zanNumber
+        ,a.cai_number as caiNumber
+        ,a.jianshenkecheng_types as jianshenkechengTypes
+        ,a.jianshenkecheng_clicknum as jianshenkechengClicknum
+        ,a.jianshenkecheng_new_money as jianshenkechengNewMoney
+        ,a.jianshenkecheng_content as jianshenkechengContent
+        ,a.shangxia_types as shangxiaTypes
+        ,a.data_delete as dataDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.JianshenkechengView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,jiaolian.jiaolian_name as jiaolianName
+        ,jiaolian.jiaolian_phone as jiaolianPhone
+        ,jiaolian.jiaolian_photo as jiaolianPhoto
+        ,jiaolian.jiaolian_email as jiaolianEmail
+        ,jiaolian.jiaolian_new_money as jiaolianNewMoney
+        ,jiaolian.jiaolian_content as jiaolianContent
+        ,jiaolian.data_delete as dataDelete
+
+        FROM jianshenkecheng  a
+        left JOIN jiaolian jiaolian ON a.jiaolian_id = jiaolian.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.jiaolianId != null and params.jiaolianId != ''">
+                and (
+                    a.jiaolian_id = #{params.jiaolianId}
+                )
+            </if>
+            <if test=" params.jianshenkechengName != '' and params.jianshenkechengName != null and params.jianshenkechengName != 'null' ">
+                and a.jianshenkecheng_name like CONCAT('%',#{params.jianshenkechengName},'%')
+            </if>
+            <if test="params.zanNumberStart != null and params.zanNumberStart != ''">
+                <![CDATA[  and a.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null and params.zanNumberEnd != ''">
+                <![CDATA[  and a.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+             <if test="params.zanNumber != null and params.zanNumber != ''">
+                and a.zan_number = #{params.zanNumber}
+             </if>
+            <if test="params.caiNumberStart != null and params.caiNumberStart != ''">
+                <![CDATA[  and a.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null and params.caiNumberEnd != ''">
+                <![CDATA[  and a.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+             <if test="params.caiNumber != null and params.caiNumber != ''">
+                and a.cai_number = #{params.caiNumber}
+             </if>
+            <if test="params.jianshenkechengTypes != null and params.jianshenkechengTypes != ''">
+                and a.jianshenkecheng_types = #{params.jianshenkechengTypes}
+            </if>
+            <if test="params.jianshenkechengClicknumStart != null and params.jianshenkechengClicknumStart != ''">
+                <![CDATA[  and a.jianshenkecheng_clicknum >= #{params.jianshenkechengClicknumStart}   ]]>
+            </if>
+            <if test="params.jianshenkechengClicknumEnd != null and params.jianshenkechengClicknumEnd != ''">
+                <![CDATA[  and a.jianshenkecheng_clicknum <= #{params.jianshenkechengClicknumEnd}   ]]>
+            </if>
+             <if test="params.jianshenkechengClicknum != null and params.jianshenkechengClicknum != ''">
+                and a.jianshenkecheng_clicknum = #{params.jianshenkechengClicknum}
+             </if>
+            <if test="params.jianshenkechengNewMoneyStart != null ">
+                <![CDATA[  and a.jianshenkecheng_new_money >= #{params.jianshenkechengNewMoneyStart}   ]]>
+            </if>
+            <if test="params.jianshenkechengNewMoneyEnd != null ">
+                <![CDATA[  and a.jianshenkecheng_new_money <= #{params.jianshenkechengNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.jianshenkechengNewMoney != null and params.jianshenkechengNewMoney != ''">
+                and a.jianshenkecheng_new_money = #{params.jianshenkechengNewMoney}
+            </if>
+            <if test=" params.jianshenkechengContent != '' and params.jianshenkechengContent != null and params.jianshenkechengContent != 'null' ">
+                and a.jianshenkecheng_content like CONCAT('%',#{params.jianshenkechengContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test="params.dataDeleteStart != null and params.dataDeleteStart != ''">
+                <![CDATA[  and a.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null and params.dataDeleteEnd != ''">
+                <![CDATA[  and a.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+             <if test="params.dataDelete != null and params.dataDelete != ''">
+                and a.data_delete = #{params.dataDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断教练的id不为空 -->
+            <if test=" params.jiaolianIdNotNull != '' and params.jiaolianIdNotNull != null and params.jiaolianIdNotNull != 'null' ">
+                and a.jiaolian_id IS NOT NULL
+            </if>
+            <if test=" params.jiaolianName != '' and params.jiaolianName != null and params.jiaolianName != 'null' ">
+                and jiaolian.jiaolian_name like CONCAT('%',#{params.jiaolianName},'%')
+            </if>
+            <if test=" params.jiaolianPhone != '' and params.jiaolianPhone != null and params.jiaolianPhone != 'null' ">
+                and jiaolian.jiaolian_phone like CONCAT('%',#{params.jiaolianPhone},'%')
+            </if>
+            <if test=" params.jiaolianEmail != '' and params.jiaolianEmail != null and params.jiaolianEmail != 'null' ">
+                and jiaolian.jiaolian_email like CONCAT('%',#{params.jiaolianEmail},'%')
+            </if>
+            <if test="params.jiaolianNewMoneyStart != null ">
+                <![CDATA[  and jiaolian.jiaolian_new_money >= #{params.jiaolianNewMoneyStart}   ]]>
+            </if>
+            <if test="params.jiaolianNewMoneyEnd != null ">
+                <![CDATA[  and jiaolian.jiaolian_new_money <= #{params.jiaolianNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.jiaolianNewMoney != null and params.jiaolianNewMoney != ''">
+                and a.jiaolian_new_money = #{params.jiaolianNewMoney}
+            </if>
+            <if test=" params.jiaolianContent != '' and params.jiaolianContent != null and params.jiaolianContent != 'null' ">
+                and jiaolian.jiaolian_content like CONCAT('%',#{params.jiaolianContent},'%')
+            </if>
+            <if test="params.dataDeleteStart != null  and params.dataDeleteStart != '' ">
+                <![CDATA[  and jiaolian.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null  and params.dataDeleteEnd != '' ">
+                <![CDATA[  and jiaolian.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+            <if test="params.dataDelete != null  and params.dataDelete != '' ">
+                and jiaolian.data_delete = #{params.dataDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(jiaolian.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(jiaolian.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

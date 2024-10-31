@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.DianzhangDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.dianzhang_name as dianzhangName
+        ,a.dianzhang_phone as dianzhangPhone
+        ,a.dianzhang_photo as dianzhangPhoto
+        ,a.sex_types as sexTypes
+        ,a.dianzhang_email as dianzhangEmail
+        ,a.dianzhang_content as dianzhangContent
+        ,a.data_delete as dataDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.DianzhangView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM dianzhang  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.dianzhangName != '' and params.dianzhangName != null and params.dianzhangName != 'null' ">
+                and a.dianzhang_name like CONCAT('%',#{params.dianzhangName},'%')
+            </if>
+            <if test=" params.dianzhangPhone != '' and params.dianzhangPhone != null and params.dianzhangPhone != 'null' ">
+                and a.dianzhang_phone like CONCAT('%',#{params.dianzhangPhone},'%')
+            </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test=" params.dianzhangEmail != '' and params.dianzhangEmail != null and params.dianzhangEmail != 'null' ">
+                and a.dianzhang_email like CONCAT('%',#{params.dianzhangEmail},'%')
+            </if>
+            <if test=" params.dianzhangContent != '' and params.dianzhangContent != null and params.dianzhangContent != 'null' ">
+                and a.dianzhang_content like CONCAT('%',#{params.dianzhangContent},'%')
+            </if>
+            <if test="params.dataDeleteStart != null and params.dataDeleteStart != ''">
+                <![CDATA[  and a.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null and params.dataDeleteEnd != ''">
+                <![CDATA[  and a.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+             <if test="params.dataDelete != null and params.dataDelete != ''">
+                and a.data_delete = #{params.dataDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

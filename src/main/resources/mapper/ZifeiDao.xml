@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ZifeiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.zifei_uuid_number as zifeiUuidNumber
+        ,a.zifei_name as zifeiName
+        ,a.zifei_types as zifeiTypes
+        ,a.zifei_new_money as zifeiNewMoney
+        ,a.qiantai_id as qiantaiId
+        ,a.zifei_content as zifeiContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ZifeiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,qiantai.qiantai_name as qiantaiName
+        ,qiantai.qiantai_phone as qiantaiPhone
+        ,qiantai.qiantai_photo as qiantaiPhoto
+        ,qiantai.qiantai_email as qiantaiEmail
+        ,qiantai.qiantai_new_money as qiantaiNewMoney
+        ,qiantai.qiantai_content as qiantaiContent
+        ,qiantai.data_delete as dataDelete
+
+        FROM zifei  a
+        left JOIN qiantai qiantai ON a.qiantai_id = qiantai.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.zifeiUuidNumber != '' and params.zifeiUuidNumber != null and params.zifeiUuidNumber != 'null' ">
+                and a.zifei_uuid_number like CONCAT('%',#{params.zifeiUuidNumber},'%')
+            </if>
+            <if test=" params.zifeiName != '' and params.zifeiName != null and params.zifeiName != 'null' ">
+                and a.zifei_name like CONCAT('%',#{params.zifeiName},'%')
+            </if>
+            <if test="params.zifeiTypes != null and params.zifeiTypes != ''">
+                and a.zifei_types = #{params.zifeiTypes}
+            </if>
+            <if test="params.zifeiNewMoneyStart != null ">
+                <![CDATA[  and a.zifei_new_money >= #{params.zifeiNewMoneyStart}   ]]>
+            </if>
+            <if test="params.zifeiNewMoneyEnd != null ">
+                <![CDATA[  and a.zifei_new_money <= #{params.zifeiNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.zifeiNewMoney != null and params.zifeiNewMoney != ''">
+                and a.zifei_new_money = #{params.zifeiNewMoney}
+            </if>
+            <if test="params.qiantaiId != null and params.qiantaiId != ''">
+                and (
+                    a.qiantai_id = #{params.qiantaiId}
+                )
+            </if>
+            <if test=" params.zifeiContent != '' and params.zifeiContent != null and params.zifeiContent != 'null' ">
+                and a.zifei_content like CONCAT('%',#{params.zifeiContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断前台的id不为空 -->
+            <if test=" params.qiantaiIdNotNull != '' and params.qiantaiIdNotNull != null and params.qiantaiIdNotNull != 'null' ">
+                and a.qiantai_id IS NOT NULL
+            </if>
+            <if test=" params.qiantaiName != '' and params.qiantaiName != null and params.qiantaiName != 'null' ">
+                and qiantai.qiantai_name like CONCAT('%',#{params.qiantaiName},'%')
+            </if>
+            <if test=" params.qiantaiPhone != '' and params.qiantaiPhone != null and params.qiantaiPhone != 'null' ">
+                and qiantai.qiantai_phone like CONCAT('%',#{params.qiantaiPhone},'%')
+            </if>
+            <if test=" params.qiantaiEmail != '' and params.qiantaiEmail != null and params.qiantaiEmail != 'null' ">
+                and qiantai.qiantai_email like CONCAT('%',#{params.qiantaiEmail},'%')
+            </if>
+            <if test="params.qiantaiNewMoneyStart != null ">
+                <![CDATA[  and qiantai.qiantai_new_money >= #{params.qiantaiNewMoneyStart}   ]]>
+            </if>
+            <if test="params.qiantaiNewMoneyEnd != null ">
+                <![CDATA[  and qiantai.qiantai_new_money <= #{params.qiantaiNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.qiantaiNewMoney != null and params.qiantaiNewMoney != ''">
+                and a.qiantai_new_money = #{params.qiantaiNewMoney}
+            </if>
+            <if test=" params.qiantaiContent != '' and params.qiantaiContent != null and params.qiantaiContent != 'null' ">
+                and qiantai.qiantai_content like CONCAT('%',#{params.qiantaiContent},'%')
+            </if>
+            <if test="params.dataDeleteStart != null  and params.dataDeleteStart != '' ">
+                <![CDATA[  and qiantai.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null  and params.dataDeleteEnd != '' ">
+                <![CDATA[  and qiantai.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+            <if test="params.dataDelete != null  and params.dataDelete != '' ">
+                and qiantai.data_delete = #{params.dataDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(qiantai.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(qiantai.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

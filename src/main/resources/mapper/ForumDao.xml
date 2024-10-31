@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ForumDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.forum_name as forumName
+        ,a.dianzhang_id as dianzhangId
+        ,a.qiantai_id as qiantaiId
+        ,a.zhuchang_id as zhuchangId
+        ,a.yonghu_id as yonghuId
+        ,a.jiaolian_id as jiaolianId
+        ,a.users_id as usersId
+        ,a.forum_content as forumContent
+        ,a.super_ids as superIds
+        ,a.forum_state_types as forumStateTypes
+        ,a.insert_time as insertTime
+        ,a.update_time as updateTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ForumView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,dianzhang.dianzhang_name as dianzhangName
+        ,dianzhang.dianzhang_phone as dianzhangPhone
+        ,dianzhang.dianzhang_photo as dianzhangPhoto
+        ,dianzhang.dianzhang_email as dianzhangEmail
+        ,dianzhang.dianzhang_content as dianzhangContent
+        ,dianzhang.data_delete as dataDelete
+        ,jiaolian.jiaolian_name as jiaolianName
+        ,jiaolian.jiaolian_phone as jiaolianPhone
+        ,jiaolian.jiaolian_photo as jiaolianPhoto
+        ,jiaolian.jiaolian_email as jiaolianEmail
+        ,jiaolian.jiaolian_new_money as jiaolianNewMoney
+        ,jiaolian.jiaolian_content as jiaolianContent
+        ,jiaolian.data_delete as dataDelete
+        ,qiantai.qiantai_name as qiantaiName
+        ,qiantai.qiantai_phone as qiantaiPhone
+        ,qiantai.qiantai_photo as qiantaiPhoto
+        ,qiantai.qiantai_email as qiantaiEmail
+        ,qiantai.qiantai_new_money as qiantaiNewMoney
+        ,qiantai.qiantai_content as qiantaiContent
+        ,qiantai.data_delete as dataDelete
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.new_money as newMoney
+        ,yonghu.data_delete as dataDelete
+        ,zhuchang.zhuchang_name as zhuchangName
+        ,zhuchang.zhuchang_phone as zhuchangPhone
+        ,zhuchang.zhuchang_photo as zhuchangPhoto
+        ,zhuchang.zhuchang_email as zhuchangEmail
+        ,zhuchang.zhuchang_new_money as zhuchangNewMoney
+        ,zhuchang.zhuchang_content as zhuchangContent
+        ,zhuchang.data_delete as dataDelete
+        ,users.username as uusername
+        ,users.password as upassword
+        ,users.role as urole
+        ,users.addtime as uaddtime
+
+        FROM forum  a
+        left JOIN dianzhang dianzhang ON a.dianzhang_id = dianzhang.id
+        left JOIN jiaolian jiaolian ON a.jiaolian_id = jiaolian.id
+        left JOIN qiantai qiantai ON a.qiantai_id = qiantai.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+        left JOIN zhuchang zhuchang ON a.zhuchang_id = zhuchang.id
+        left JOIN users users ON a.users_id = users.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.forumName != '' and params.forumName != null and params.forumName != 'null' ">
+                and a.forum_name like CONCAT('%',#{params.forumName},'%')
+            </if>
+            <if test="params.dianzhangId != null and params.dianzhangId != ''">
+                and (
+                    a.dianzhang_id = #{params.dianzhangId}
+                )
+            </if>
+            <if test="params.qiantaiId != null and params.qiantaiId != ''">
+                and (
+                    a.qiantai_id = #{params.qiantaiId}
+                )
+            </if>
+            <if test="params.zhuchangId != null and params.zhuchangId != ''">
+                and (
+                    a.zhuchang_id = #{params.zhuchangId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.jiaolianId != null and params.jiaolianId != ''">
+                and (
+                    a.jiaolian_id = #{params.jiaolianId}
+                )
+            </if>
+            <if test="params.usersId != null and params.usersId != ''">
+                and (
+                    a.users_id = #{params.usersId}
+                )
+            </if>
+            <if test=" params.forumContent != '' and params.forumContent != null and params.forumContent != 'null' ">
+                and a.forum_content like CONCAT('%',#{params.forumContent},'%')
+            </if>
+            <if test="params.superIdsStart != null and params.superIdsStart != ''">
+                <![CDATA[  and a.super_ids >= #{params.superIdsStart}   ]]>
+            </if>
+            <if test="params.superIdsEnd != null and params.superIdsEnd != ''">
+                <![CDATA[  and a.super_ids <= #{params.superIdsEnd}   ]]>
+            </if>
+             <if test="params.superIds != null and params.superIds != ''">
+                and a.super_ids = #{params.superIds}
+             </if>
+            <if test="params.forumStateTypes != null and params.forumStateTypes != ''">
+                and a.forum_state_types = #{params.forumStateTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+            <if test=" params.updateTimeStart != '' and params.updateTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) >= UNIX_TIMESTAMP(#{params.updateTimeStart}) ]]>
+            </if>
+            <if test=" params.updateTimeEnd != '' and params.updateTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) <= UNIX_TIMESTAMP(#{params.updateTimeEnd}) ]]>
+            </if>
+            <if test="params.updateTime != null and params.updateTime != ''">
+                and a.update_time = #{params.updateTime}
+            </if>
+
+                <!-- 判断店长的id不为空 -->
+            <if test=" params.dianzhangIdNotNull != '' and params.dianzhangIdNotNull != null and params.dianzhangIdNotNull != 'null' ">
+                and a.dianzhang_id IS NOT NULL
+            </if>
+            <if test=" params.dianzhangName != '' and params.dianzhangName != null and params.dianzhangName != 'null' ">
+                and dianzhang.dianzhang_name like CONCAT('%',#{params.dianzhangName},'%')
+            </if>
+            <if test=" params.dianzhangPhone != '' and params.dianzhangPhone != null and params.dianzhangPhone != 'null' ">
+                and dianzhang.dianzhang_phone like CONCAT('%',#{params.dianzhangPhone},'%')
+            </if>
+            <if test=" params.dianzhangEmail != '' and params.dianzhangEmail != null and params.dianzhangEmail != 'null' ">
+                and dianzhang.dianzhang_email like CONCAT('%',#{params.dianzhangEmail},'%')
+            </if>
+            <if test=" params.dianzhangContent != '' and params.dianzhangContent != null and params.dianzhangContent != 'null' ">
+                and dianzhang.dianzhang_content like CONCAT('%',#{params.dianzhangContent},'%')
+            </if>
+            <if test="params.dataDeleteStart != null  and params.dataDeleteStart != '' ">
+                <![CDATA[  and dianzhang.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null  and params.dataDeleteEnd != '' ">
+                <![CDATA[  and dianzhang.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+            <if test="params.dataDelete != null  and params.dataDelete != '' ">
+                and dianzhang.data_delete = #{params.dataDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(dianzhang.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(dianzhang.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断教练的id不为空 -->
+            <if test=" params.jiaolianIdNotNull != '' and params.jiaolianIdNotNull != null and params.jiaolianIdNotNull != 'null' ">
+                and a.jiaolian_id IS NOT NULL
+            </if>
+            <if test=" params.jiaolianName != '' and params.jiaolianName != null and params.jiaolianName != 'null' ">
+                and jiaolian.jiaolian_name like CONCAT('%',#{params.jiaolianName},'%')
+            </if>
+            <if test=" params.jiaolianPhone != '' and params.jiaolianPhone != null and params.jiaolianPhone != 'null' ">
+                and jiaolian.jiaolian_phone like CONCAT('%',#{params.jiaolianPhone},'%')
+            </if>
+            <if test=" params.jiaolianEmail != '' and params.jiaolianEmail != null and params.jiaolianEmail != 'null' ">
+                and jiaolian.jiaolian_email like CONCAT('%',#{params.jiaolianEmail},'%')
+            </if>
+            <if test="params.jiaolianNewMoneyStart != null ">
+                <![CDATA[  and jiaolian.jiaolian_new_money >= #{params.jiaolianNewMoneyStart}   ]]>
+            </if>
+            <if test="params.jiaolianNewMoneyEnd != null ">
+                <![CDATA[  and jiaolian.jiaolian_new_money <= #{params.jiaolianNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.jiaolianNewMoney != null and params.jiaolianNewMoney != ''">
+                and a.jiaolian_new_money = #{params.jiaolianNewMoney}
+            </if>
+            <if test=" params.jiaolianContent != '' and params.jiaolianContent != null and params.jiaolianContent != 'null' ">
+                and jiaolian.jiaolian_content like CONCAT('%',#{params.jiaolianContent},'%')
+            </if>
+            <if test="params.dataDeleteStart != null  and params.dataDeleteStart != '' ">
+                <![CDATA[  and jiaolian.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null  and params.dataDeleteEnd != '' ">
+                <![CDATA[  and jiaolian.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+            <if test="params.dataDelete != null  and params.dataDelete != '' ">
+                and jiaolian.data_delete = #{params.dataDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(jiaolian.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(jiaolian.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断前台的id不为空 -->
+            <if test=" params.qiantaiIdNotNull != '' and params.qiantaiIdNotNull != null and params.qiantaiIdNotNull != 'null' ">
+                and a.qiantai_id IS NOT NULL
+            </if>
+            <if test=" params.qiantaiName != '' and params.qiantaiName != null and params.qiantaiName != 'null' ">
+                and qiantai.qiantai_name like CONCAT('%',#{params.qiantaiName},'%')
+            </if>
+            <if test=" params.qiantaiPhone != '' and params.qiantaiPhone != null and params.qiantaiPhone != 'null' ">
+                and qiantai.qiantai_phone like CONCAT('%',#{params.qiantaiPhone},'%')
+            </if>
+            <if test=" params.qiantaiEmail != '' and params.qiantaiEmail != null and params.qiantaiEmail != 'null' ">
+                and qiantai.qiantai_email like CONCAT('%',#{params.qiantaiEmail},'%')
+            </if>
+            <if test="params.qiantaiNewMoneyStart != null ">
+                <![CDATA[  and qiantai.qiantai_new_money >= #{params.qiantaiNewMoneyStart}   ]]>
+            </if>
+            <if test="params.qiantaiNewMoneyEnd != null ">
+                <![CDATA[  and qiantai.qiantai_new_money <= #{params.qiantaiNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.qiantaiNewMoney != null and params.qiantaiNewMoney != ''">
+                and a.qiantai_new_money = #{params.qiantaiNewMoney}
+            </if>
+            <if test=" params.qiantaiContent != '' and params.qiantaiContent != null and params.qiantaiContent != 'null' ">
+                and qiantai.qiantai_content like CONCAT('%',#{params.qiantaiContent},'%')
+            </if>
+            <if test="params.dataDeleteStart != null  and params.dataDeleteStart != '' ">
+                <![CDATA[  and qiantai.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null  and params.dataDeleteEnd != '' ">
+                <![CDATA[  and qiantai.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+            <if test="params.dataDelete != null  and params.dataDelete != '' ">
+                and qiantai.data_delete = #{params.dataDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(qiantai.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(qiantai.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and yonghu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and yonghu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+            <if test="params.newMoney != null and params.newMoney != ''">
+                and a.new_money = #{params.newMoney}
+            </if>
+            <if test="params.dataDeleteStart != null  and params.dataDeleteStart != '' ">
+                <![CDATA[  and yonghu.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null  and params.dataDeleteEnd != '' ">
+                <![CDATA[  and yonghu.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+            <if test="params.dataDelete != null  and params.dataDelete != '' ">
+                and yonghu.data_delete = #{params.dataDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(yonghu.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(yonghu.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断驻场人员的id不为空 -->
+            <if test=" params.zhuchangIdNotNull != '' and params.zhuchangIdNotNull != null and params.zhuchangIdNotNull != 'null' ">
+                and a.zhuchang_id IS NOT NULL
+            </if>
+            <if test=" params.zhuchangName != '' and params.zhuchangName != null and params.zhuchangName != 'null' ">
+                and zhuchang.zhuchang_name like CONCAT('%',#{params.zhuchangName},'%')
+            </if>
+            <if test=" params.zhuchangPhone != '' and params.zhuchangPhone != null and params.zhuchangPhone != 'null' ">
+                and zhuchang.zhuchang_phone like CONCAT('%',#{params.zhuchangPhone},'%')
+            </if>
+            <if test=" params.zhuchangEmail != '' and params.zhuchangEmail != null and params.zhuchangEmail != 'null' ">
+                and zhuchang.zhuchang_email like CONCAT('%',#{params.zhuchangEmail},'%')
+            </if>
+            <if test="params.zhuchangNewMoneyStart != null ">
+                <![CDATA[  and zhuchang.zhuchang_new_money >= #{params.zhuchangNewMoneyStart}   ]]>
+            </if>
+            <if test="params.zhuchangNewMoneyEnd != null ">
+                <![CDATA[  and zhuchang.zhuchang_new_money <= #{params.zhuchangNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.zhuchangNewMoney != null and params.zhuchangNewMoney != ''">
+                and a.zhuchang_new_money = #{params.zhuchangNewMoney}
+            </if>
+            <if test=" params.zhuchangContent != '' and params.zhuchangContent != null and params.zhuchangContent != 'null' ">
+                and zhuchang.zhuchang_content like CONCAT('%',#{params.zhuchangContent},'%')
+            </if>
+            <if test="params.dataDeleteStart != null  and params.dataDeleteStart != '' ">
+                <![CDATA[  and zhuchang.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null  and params.dataDeleteEnd != '' ">
+                <![CDATA[  and zhuchang.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+            <if test="params.dataDelete != null  and params.dataDelete != '' ">
+                and zhuchang.data_delete = #{params.dataDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(zhuchang.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(zhuchang.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断管理员的id不为空 -->
+            <if test=" params.usersIdNotNull != '' and params.usersIdNotNull != null and params.usersIdNotNull != 'null' ">
+                and a.users_id IS NOT NULL
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and users.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and users.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.role != '' and params.role != null and params.role != 'null' ">
+                and users.role like CONCAT('%',#{params.role},'%')
+            </if>
+            <if test=" params.addtimeStart != '' and params.addtimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(users.addtime) >= UNIX_TIMESTAMP(#{params.addtimeStart}) ]]>
+            </if>
+            <if test=" params.addtimeEnd != '' and params.addtimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(users.addtime) <= UNIX_TIMESTAMP(#{params.addtimeEnd}) ]]>
+            </if>
+            <if test="params.addtime != null and params.addtime != ''">
+                and a.addtime = #{params.addtime}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

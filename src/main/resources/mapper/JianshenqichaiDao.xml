@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.JianshenqichaiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.jianshenqichai_uuid_number as jianshenqichaiUuidNumber
+        ,a.jianshenqichai_name as jianshenqichaiName
+        ,a.jianshenqichai_types as jianshenqichaiTypes
+        ,a.jianshenqichai_kucun_number as jianshenqichaiKucunNumber
+        ,a.jianshenqichai_new_money as jianshenqichaiNewMoney
+        ,a.jianshenqichai_content as jianshenqichaiContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.JianshenqichaiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM jianshenqichai  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.jianshenqichaiUuidNumber != '' and params.jianshenqichaiUuidNumber != null and params.jianshenqichaiUuidNumber != 'null' ">
+                and a.jianshenqichai_uuid_number like CONCAT('%',#{params.jianshenqichaiUuidNumber},'%')
+            </if>
+            <if test=" params.jianshenqichaiName != '' and params.jianshenqichaiName != null and params.jianshenqichaiName != 'null' ">
+                and a.jianshenqichai_name like CONCAT('%',#{params.jianshenqichaiName},'%')
+            </if>
+            <if test="params.jianshenqichaiTypes != null and params.jianshenqichaiTypes != ''">
+                and a.jianshenqichai_types = #{params.jianshenqichaiTypes}
+            </if>
+            <if test="params.jianshenqichaiKucunNumberStart != null and params.jianshenqichaiKucunNumberStart != ''">
+                <![CDATA[  and a.jianshenqichai_kucun_number >= #{params.jianshenqichaiKucunNumberStart}   ]]>
+            </if>
+            <if test="params.jianshenqichaiKucunNumberEnd != null and params.jianshenqichaiKucunNumberEnd != ''">
+                <![CDATA[  and a.jianshenqichai_kucun_number <= #{params.jianshenqichaiKucunNumberEnd}   ]]>
+            </if>
+             <if test="params.jianshenqichaiKucunNumber != null and params.jianshenqichaiKucunNumber != ''">
+                and a.jianshenqichai_kucun_number = #{params.jianshenqichaiKucunNumber}
+             </if>
+            <if test="params.jianshenqichaiNewMoneyStart != null ">
+                <![CDATA[  and a.jianshenqichai_new_money >= #{params.jianshenqichaiNewMoneyStart}   ]]>
+            </if>
+            <if test="params.jianshenqichaiNewMoneyEnd != null ">
+                <![CDATA[  and a.jianshenqichai_new_money <= #{params.jianshenqichaiNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.jianshenqichaiNewMoney != null and params.jianshenqichaiNewMoney != ''">
+                and a.jianshenqichai_new_money = #{params.jianshenqichaiNewMoney}
+            </if>
+            <if test=" params.jianshenqichaiContent != '' and params.jianshenqichaiContent != null and params.jianshenqichaiContent != 'null' ">
+                and a.jianshenqichai_content like CONCAT('%',#{params.jianshenqichaiContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

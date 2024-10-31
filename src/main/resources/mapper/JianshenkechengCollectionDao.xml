@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.JianshenkechengCollectionDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.jianshenkecheng_id as jianshenkechengId
+        ,a.yonghu_id as yonghuId
+        ,a.jianshenkecheng_collection_types as jianshenkechengCollectionTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.JianshenkechengCollectionView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,jianshenkecheng.jiaolian_id as jianshenkechengJiaolianId
+        ,jianshenkecheng.jianshenkecheng_name as jianshenkechengName
+        ,jianshenkecheng.jianshenkecheng_photo as jianshenkechengPhoto
+        ,jianshenkecheng.zan_number as zanNumber
+        ,jianshenkecheng.cai_number as caiNumber
+        ,jianshenkecheng.jianshenkecheng_types as jianshenkechengTypes
+        ,jianshenkecheng.jianshenkecheng_clicknum as jianshenkechengClicknum
+        ,jianshenkecheng.jianshenkecheng_new_money as jianshenkechengNewMoney
+        ,jianshenkecheng.jianshenkecheng_content as jianshenkechengContent
+        ,jianshenkecheng.shangxia_types as shangxiaTypes
+        ,jianshenkecheng.data_delete as dataDelete
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.new_money as newMoney
+        ,yonghu.data_delete as dataDelete
+
+        FROM jianshenkecheng_collection  a
+        left JOIN jianshenkecheng jianshenkecheng ON a.jianshenkecheng_id = jianshenkecheng.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.jianshenkechengId != null and params.jianshenkechengId != ''">
+                and (
+                    a.jianshenkecheng_id = #{params.jianshenkechengId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.jianshenkechengCollectionTypes != null and params.jianshenkechengCollectionTypes != ''">
+                and a.jianshenkecheng_collection_types = #{params.jianshenkechengCollectionTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断健身课程的id不为空 -->
+            <if test=" params.jianshenkechengIdNotNull != '' and params.jianshenkechengIdNotNull != null and params.jianshenkechengIdNotNull != 'null' ">
+                and a.jianshenkecheng_id IS NOT NULL
+            </if>
+            <if test="params.jiaolianId != null  and params.jiaolianId != ''">
+                and jianshenkecheng.jiaolian_id = #{params.jiaolianId}
+            </if>
+            <if test=" params.jianshenkechengName != '' and params.jianshenkechengName != null and params.jianshenkechengName != 'null' ">
+                and jianshenkecheng.jianshenkecheng_name like CONCAT('%',#{params.jianshenkechengName},'%')
+            </if>
+            <if test="params.zanNumberStart != null  and params.zanNumberStart != '' ">
+                <![CDATA[  and jianshenkecheng.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null  and params.zanNumberEnd != '' ">
+                <![CDATA[  and jianshenkecheng.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+            <if test="params.zanNumber != null  and params.zanNumber != '' ">
+                and jianshenkecheng.zan_number = #{params.zanNumber}
+            </if>
+            <if test="params.caiNumberStart != null  and params.caiNumberStart != '' ">
+                <![CDATA[  and jianshenkecheng.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null  and params.caiNumberEnd != '' ">
+                <![CDATA[  and jianshenkecheng.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+            <if test="params.caiNumber != null  and params.caiNumber != '' ">
+                and jianshenkecheng.cai_number = #{params.caiNumber}
+            </if>
+            <if test="params.jianshenkechengTypes != null  and params.jianshenkechengTypes != ''">
+                and jianshenkecheng.jianshenkecheng_types = #{params.jianshenkechengTypes}
+            </if>
+
+            <if test="params.jianshenkechengClicknumStart != null  and params.jianshenkechengClicknumStart != '' ">
+                <![CDATA[  and jianshenkecheng.jianshenkecheng_clicknum >= #{params.jianshenkechengClicknumStart}   ]]>
+            </if>
+            <if test="params.jianshenkechengClicknumEnd != null  and params.jianshenkechengClicknumEnd != '' ">
+                <![CDATA[  and jianshenkecheng.jianshenkecheng_clicknum <= #{params.jianshenkechengClicknumEnd}   ]]>
+            </if>
+            <if test="params.jianshenkechengClicknum != null  and params.jianshenkechengClicknum != '' ">
+                and jianshenkecheng.jianshenkecheng_clicknum = #{params.jianshenkechengClicknum}
+            </if>
+            <if test="params.jianshenkechengNewMoneyStart != null ">
+                <![CDATA[  and jianshenkecheng.jianshenkecheng_new_money >= #{params.jianshenkechengNewMoneyStart}   ]]>
+            </if>
+            <if test="params.jianshenkechengNewMoneyEnd != null ">
+                <![CDATA[  and jianshenkecheng.jianshenkecheng_new_money <= #{params.jianshenkechengNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.jianshenkechengNewMoney != null and params.jianshenkechengNewMoney != ''">
+                and a.jianshenkecheng_new_money = #{params.jianshenkechengNewMoney}
+            </if>
+            <if test=" params.jianshenkechengContent != '' and params.jianshenkechengContent != null and params.jianshenkechengContent != 'null' ">
+                and jianshenkecheng.jianshenkecheng_content like CONCAT('%',#{params.jianshenkechengContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and jianshenkecheng.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test="params.dataDeleteStart != null  and params.dataDeleteStart != '' ">
+                <![CDATA[  and jianshenkecheng.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null  and params.dataDeleteEnd != '' ">
+                <![CDATA[  and jianshenkecheng.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+            <if test="params.dataDelete != null  and params.dataDelete != '' ">
+                and jianshenkecheng.data_delete = #{params.dataDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(jianshenkecheng.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(jianshenkecheng.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and yonghu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and yonghu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+            <if test="params.newMoney != null and params.newMoney != ''">
+                and a.new_money = #{params.newMoney}
+            </if>
+            <if test="params.dataDeleteStart != null  and params.dataDeleteStart != '' ">
+                <![CDATA[  and yonghu.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null  and params.dataDeleteEnd != '' ">
+                <![CDATA[  and yonghu.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+            <if test="params.dataDelete != null  and params.dataDelete != '' ">
+                and yonghu.data_delete = #{params.dataDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(yonghu.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(yonghu.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

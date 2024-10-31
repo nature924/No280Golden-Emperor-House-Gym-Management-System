@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.QiantaiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.qiantai_name as qiantaiName
+        ,a.qiantai_phone as qiantaiPhone
+        ,a.qiantai_photo as qiantaiPhoto
+        ,a.sex_types as sexTypes
+        ,a.qiantai_email as qiantaiEmail
+        ,a.qiantai_new_money as qiantaiNewMoney
+        ,a.qiantai_content as qiantaiContent
+        ,a.data_delete as dataDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.QiantaiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM qiantai  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.qiantaiName != '' and params.qiantaiName != null and params.qiantaiName != 'null' ">
+                and a.qiantai_name like CONCAT('%',#{params.qiantaiName},'%')
+            </if>
+            <if test=" params.qiantaiPhone != '' and params.qiantaiPhone != null and params.qiantaiPhone != 'null' ">
+                and a.qiantai_phone like CONCAT('%',#{params.qiantaiPhone},'%')
+            </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test=" params.qiantaiEmail != '' and params.qiantaiEmail != null and params.qiantaiEmail != 'null' ">
+                and a.qiantai_email like CONCAT('%',#{params.qiantaiEmail},'%')
+            </if>
+            <if test="params.qiantaiNewMoneyStart != null ">
+                <![CDATA[  and a.qiantai_new_money >= #{params.qiantaiNewMoneyStart}   ]]>
+            </if>
+            <if test="params.qiantaiNewMoneyEnd != null ">
+                <![CDATA[  and a.qiantai_new_money <= #{params.qiantaiNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.qiantaiNewMoney != null and params.qiantaiNewMoney != ''">
+                and a.qiantai_new_money = #{params.qiantaiNewMoney}
+            </if>
+            <if test=" params.qiantaiContent != '' and params.qiantaiContent != null and params.qiantaiContent != 'null' ">
+                and a.qiantai_content like CONCAT('%',#{params.qiantaiContent},'%')
+            </if>
+            <if test="params.dataDeleteStart != null and params.dataDeleteStart != ''">
+                <![CDATA[  and a.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null and params.dataDeleteEnd != ''">
+                <![CDATA[  and a.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+             <if test="params.dataDelete != null and params.dataDelete != ''">
+                and a.data_delete = #{params.dataDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

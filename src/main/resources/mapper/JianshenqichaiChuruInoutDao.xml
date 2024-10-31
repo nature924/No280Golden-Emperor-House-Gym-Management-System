@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.JianshenqichaiChuruInoutDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.jianshenqichai_churu_inout_uuid_number as jianshenqichaiChuruInoutUuidNumber
+        ,a.jianshenqichai_churu_inout_name as jianshenqichaiChuruInoutName
+        ,a.jianshenqichai_churu_inout_types as jianshenqichaiChuruInoutTypes
+        ,a.jianshenqichai_churu_inout_content as jianshenqichaiChuruInoutContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.JianshenqichaiChuruInoutView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM jianshenqichai_churu_inout  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.jianshenqichaiChuruInoutUuidNumber != '' and params.jianshenqichaiChuruInoutUuidNumber != null and params.jianshenqichaiChuruInoutUuidNumber != 'null' ">
+                and a.jianshenqichai_churu_inout_uuid_number like CONCAT('%',#{params.jianshenqichaiChuruInoutUuidNumber},'%')
+            </if>
+            <if test=" params.jianshenqichaiChuruInoutName != '' and params.jianshenqichaiChuruInoutName != null and params.jianshenqichaiChuruInoutName != 'null' ">
+                and a.jianshenqichai_churu_inout_name like CONCAT('%',#{params.jianshenqichaiChuruInoutName},'%')
+            </if>
+            <if test="params.jianshenqichaiChuruInoutTypes != null and params.jianshenqichaiChuruInoutTypes != ''">
+                and a.jianshenqichai_churu_inout_types = #{params.jianshenqichaiChuruInoutTypes}
+            </if>
+            <if test=" params.jianshenqichaiChuruInoutContent != '' and params.jianshenqichaiChuruInoutContent != null and params.jianshenqichaiChuruInoutContent != 'null' ">
+                and a.jianshenqichai_churu_inout_content like CONCAT('%',#{params.jianshenqichaiChuruInoutContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
